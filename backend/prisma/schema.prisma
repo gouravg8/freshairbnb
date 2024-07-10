@@ -14,12 +14,13 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  name     String
-  username String    @unique
-  password String
-  listings Listing[]
-  review   Review[]
+  id        Int       @id @default(autoincrement())
+  name      String
+  username  String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  listings  Listing[]
+  review    Review[]
 }
 
 model Listing {
@@ -32,16 +33,18 @@ model Listing {
   price       Int
   country     String
   location    String
+  createdAt   DateTime @default(now())
   category    String[]
   review      Review[]
 }
 
 model Review {
-  id           Int     @id @default(autoincrement())
-  owner        User    @relation(fields: [userName], references: [username])
+  id           Int      @id @default(autoincrement())
+  owner        User     @relation(fields: [userName], references: [username])
   userName     String
-  ownerListing Listing @relation(fields: [listingId], references: [id])
+  ownerListing Listing  @relation(fields: [listingId], references: [id])
   listingId    Int
   review       String
   rating       Int
+  createdAt    DateTime @default(now())
 }
