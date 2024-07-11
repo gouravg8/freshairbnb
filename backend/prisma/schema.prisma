@@ -21,6 +21,8 @@ model User {
   createdAt DateTime  @default(now()) @db.Timestamp(6)
   listings  Listing[]
   review    Review[]
+
+  @@index([createdAt])
 }
 
 model Listing {
@@ -36,6 +38,11 @@ model Listing {
   createdAt   DateTime @default(now()) @db.Timestamp(6)
   category    String[]
   review      Review[]
+
+  @@index([createdAt])
+  @@index([category])
+  @@index([price])
+  @@index([country])
 }
 
 model Review {
@@ -47,4 +54,6 @@ model Review {
   review       String   @db.VarChar(500)
   rating       Int
   createdAt    DateTime @default(now())
+
+  @@index([createdAt])
 }

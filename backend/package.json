@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -b",
+    "dev": "node dist/index.js",
     "start": "node dist/index.js",
     "format": "npx prettier . --write"
   },
@@ -13,10 +14,17 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "5.16.2",
-    "express": "^4.19.2"
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/body-parser": "^1.19.5",
     "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.14.10",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
