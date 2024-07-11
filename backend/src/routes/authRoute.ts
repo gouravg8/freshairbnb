@@ -2,9 +2,11 @@ import express from "express";
 import { signupSchema, loginSchema } from "../zod";
 import { PrismaClient } from "@prisma/client";
 import bcryptjs from "bcryptjs";
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 const authRouter = express.Router();
 const prisma = new PrismaClient();
+process.loadEnvFile(".env");
+const JWTSECRET = process.env.JWT_SECRET;
 
 authRouter.post("/signup", async (req, res) => {
   const { name, username, password } = req.body;
@@ -12,11 +14,16 @@ authRouter.post("/signup", async (req, res) => {
     const zodValidation = signupSchema.safeParse({ name, username, password });
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    if (zodValidation.success) {
+    let jwtToken;
+    if (JWTSECRET) {
+      jwtToken = jwt.sign({ name, username }, JWTSECRET);
+    }
+
+    if (zodValidation.success && jwtToken) {
       const existed = await prisma.user.findFirst({ where: { username } });
       if (!existed) {
-        const dbCall = await prisma.user.createManyAndReturn({
-          data: { name, username, password: hashedPassword },
+        const dbCall = await prisma.user.create({
+          data: { name, username, password: hashedPassword, jwtToken },
         });
         res.json({ message: "user created successfully" });
       } else {
