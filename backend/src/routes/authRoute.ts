@@ -25,7 +25,7 @@ authRouter.post("/signup", async (req, res) => {
         const dbCall = await prisma.user.create({
           data: { name, username, password: hashedPassword, jwtToken },
         });
-        res.json({ message: "user created successfully" });
+        res.json({ message: "user created successfully", jwtToken });
       } else {
         res.status(401).json({ message: "user already existed" });
       }
@@ -42,10 +42,26 @@ authRouter.post("/signup", async (req, res) => {
 
 authRouter.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  const { authorization } = req.headers;
+  const token = authorization?.split(" ")[1];
   try {
     const zodValidation = loginSchema.safeParse({ username, password });
     if (zodValidation.success) {
-      res.json({ message: "ho gaya" });
+      const dbCall = await prisma.user.findFirst({ where: { username } });
+      if (dbCall && dbCall?.password) {
+        bcryptjs.compare(password, dbCall?.password, (err, success) => {
+          if (err) {
+            throw err;
+          }
+          if (success) {
+            res.json({ message: "logged in", token: dbCall.jwtToken });
+          } else {
+            res.status(401).json({ message: "wrong password" });
+          }
+        });
+      } else {
+        res.status(404).json({ message: "user not found" });
+      }
     } else {
       res.json({ message: zodValidation });
     }
